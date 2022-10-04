@@ -16,19 +16,30 @@ class CustomWebViewModel : ObservableObject{
     public static var shared = CustomWebViewModel()
     
     private var reqeust:URLRequest!
+    @Published var urlForResource:URL!
     
     var headers: Dictionary<String, String>!
 
-    func setCookies(for key:String,_ value: AnyObject)->HTTPCookie{
-        #warning("Add actual base URL here")
+    func setCookies(for key:String,_ value: AnyObject)->HTTPCookie?{
+        guard let urlForResource = urlForResource, let host = urlForResource.host else{
+            return nil
+        }
         return HTTPCookie(properties: [
-            .domain: "sads",
+            .domain: host,
             .path: "/",
             .name: key,
             .value: value,
             .secure: "TRUE",
-        ])!
+        ])
     }
     
+    func load() throws -> URLRequest{
+        guard let urlForResource = urlForResource else{
+            throw URLError(.badURL)
+        }
+        var request = URLRequest(url: urlForResource)
+        request.httpShouldHandleCookies = true
+        return request
+    }
 
 }

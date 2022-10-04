@@ -40,7 +40,12 @@ struct CustomWebView : UIViewRepresentable{
     
     func updateUIView(_ uiView: WKWebView, context: Context) {
         debugPrint("context updated")
-        uiView.load(URLRequest(url: url))
+        webVM.urlForResource = url
+        do{
+            uiView.load(try webVM.load())
+        }catch{
+            debugPrint(error.localizedDescription)
+        }
     }
     
     func makeCoordinator() -> Coordinator {

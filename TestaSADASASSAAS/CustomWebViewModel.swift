@@ -16,12 +16,22 @@ class CustomWebViewModel : ObservableObject{
     public static var shared = CustomWebViewModel()
     
     private var reqeust:URLRequest!
-    @Published var urlForResource:URL!
+    @Published private var url: URL!
+    @Published var state : WebViewContextState = .idle
+    var urlForResource = PassthroughSubject<URL,Never>()
+    var disposables = Set<AnyCancellable>()
     
     var headers: Dictionary<String, String>!
+    
+    init(){
+        urlForResource.sink { [unowned self] newURL in
+            url = newURL
+            state = .loading
+        }.store(in: &disposables)
+    }
 
     func setCookies(for key:String,_ value: AnyObject)->HTTPCookie?{
-        guard let urlForResource = urlForResource, let host = urlForResource.host else{
+        guard let urlForResource = url, let host = urlForResource.host else{
             return nil
         }
         return HTTPCookie(properties: [
@@ -34,7 +44,7 @@ class CustomWebViewModel : ObservableObject{
     }
     
     func load() throws -> URLRequest{
-        guard let urlForResource = urlForResource else{
+        guard let urlForResource = url else{
             throw URLError(.badURL)
         }
         var request = URLRequest(url: urlForResource)
@@ -42,4 +52,10 @@ class CustomWebViewModel : ObservableObject{
         return request
     }
 
+}
+
+enum WebViewContextState {
+    case idle
+    case loading
+    case loaded
 }

@@ -14,7 +14,7 @@ struct CustomWebView : UIViewRepresentable{
 
     typealias UIViewType = WKWebView
     
-    var url:URL!
+    var url: URL!
     var type:WebviewRequestSource!
     var onFinish: (()->())? = nil
     
@@ -27,24 +27,28 @@ struct CustomWebView : UIViewRepresentable{
     ///   - type: The type of request that is made on the webView. For now we are handling only for request type `WebviewRequestSource.login`inorder to store the information in view.
     ///   - onFinish: The optional completion block that finished the action that has to be performed after the webview is loaded successfully.
     public init(url: URL!, of type:WebviewRequestSource, onFinish: (()->())? = nil) {
-        self.url = url
         self.type = type
         self.onFinish = onFinish
+        self.url = url
     }
     
     func makeUIView(context: Context) -> WKWebView {
         let wkwebview = WKWebView()
         wkwebview.navigationDelegate = context.coordinator
+        webVM.urlForResource.send(url)
         return wkwebview
     }
     
     func updateUIView(_ uiView: WKWebView, context: Context) {
         debugPrint("context updated")
-        webVM.urlForResource = url
-        do{
-            uiView.load(try webVM.load())
-        }catch{
-            debugPrint(error.localizedDescription)
+        if webVM.state == .loading{
+            do{
+                uiView.load(try webVM.load())
+                webVM.state = .loaded
+            }catch{
+                debugPrint(error.localizedDescription)
+                webVM.state = .idle
+            }
         }
     }
     

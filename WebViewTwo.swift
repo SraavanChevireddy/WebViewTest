@@ -13,7 +13,10 @@ struct WebViewTwo<Content:View>: View {
     var source:WebviewRequestSource!
     var onFinish : (()->())? = nil
     
-    @State private var showLoader = false
+    // WebviewData store
+    @ObservedObject var webVM = CustomWebViewModel.shared
+    
+    @State private var showLoader = true
     
     /// `init(:_)`
     init(url: URL!, source: WebviewRequestSource!, onFinish: ( () -> Void)? = nil, @ViewBuilder content: () -> Content) {

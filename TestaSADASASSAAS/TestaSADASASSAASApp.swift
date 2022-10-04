@@ -9,6 +9,7 @@ import SwiftUI
 
 @main
 struct TestaSADASASSAASApp: App {
+    @StateObject var webViewModel =  WebViewModel()
     var body: some Scene {
         WindowGroup {
             ContentView()

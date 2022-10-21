@@ -11,6 +11,7 @@ import SwiftUI
 
 //MARK: This file should only contain the configuration that is required for the WebView.
 
+@MainActor
 class CustomWebViewModel : ObservableObject{
     
     public static var shared = CustomWebViewModel()
@@ -24,9 +25,11 @@ class CustomWebViewModel : ObservableObject{
     var headers: Dictionary<String, String>!
     
     init(){
-        urlForResource.sink { [unowned self] newURL in
-            url = newURL
-            state = .loading
+        urlForResource.sink { [weak self] newURL in
+            if let self = self{
+                self.url = newURL
+                self.state = .loading
+            }
         }.store(in: &disposables)
     }
 

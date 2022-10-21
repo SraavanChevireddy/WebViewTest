@@ -10,7 +10,7 @@ import SwiftUI
 struct ContentView: View {
     var body: some View {
         NavigationView {
-            WebViewTwo(url: URL(string: "https://www.google.com"), source: .login) {
+            WebViewTwo(url: URL(string: "https://support.zoom.us/hc/en-us/articles/201362003-Contact-Zoom-Support"), source: .login) {
                 print("Do anything you want after view is loaded!")
             } content: {
                 ProgressView("Loading")

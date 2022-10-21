@@ -33,7 +33,10 @@ struct CustomWebView : UIViewRepresentable{
     }
     
     func makeUIView(context: Context) -> WKWebView {
-        let wkwebview = WKWebView()
+        let configuration = WKWebViewConfiguration()
+        configuration.dataDetectorTypes = .phoneNumber
+        
+        let wkwebview = WKWebView(frame: .zero, configuration: configuration)
         wkwebview.navigationDelegate = context.coordinator
         webVM.urlForResource.send(url)
         return wkwebview
@@ -66,7 +69,7 @@ struct CustomWebView : UIViewRepresentable{
         //MARK: WebView delegate methods
         func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
             // To allow the telephone call from URL scheme.
-            if navigationAction.request.url?.scheme == "tel" {
+            if navigationAction.request.url?.scheme == "mailto" || navigationAction.request.url?.scheme == "tel"{
                 UIApplication.shared.open(navigationAction.request.url!)
                 decisionHandler(.cancel)
             } else {
